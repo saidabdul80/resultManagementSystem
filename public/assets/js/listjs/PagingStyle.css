@@ -1,0 +1,41 @@
+body {
+  margin: auto;
+}
+ul,
+li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+ul {
+  padding: 20px;
+}
+
+.pagingL {
+  padding: 9px 0px 9px 40px;
+  font-size: 13px;
+  margin-top: 10px;
+  border: 1px solid #777;
+}
+.pagingL a {
+  color: #fff;
+  background: #222;
+  padding: 8px 12px;
+  margin-right: 5px;
+  text-decoration: none;
+  border: 1px solid #222;
+}
+.pagingL a.aktif {
+  background: #aaa !important;
+  color: #fff;
+}
+.pagingL a:hover {
+  box-shadow: 1px 2px 3px #888;
+  border: 1px solid #333;
+  color: #222;
+  background: white;
+}
+
+.hidden {
+  display: none;
+}
