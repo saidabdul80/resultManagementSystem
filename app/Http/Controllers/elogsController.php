@@ -13,6 +13,6 @@ class elogsController extends Controller
 
     public function show()
     {
-    //	return view('/examiner/index');
+    	return view('/examiner/e_logs');
     }
 }

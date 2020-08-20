@@ -15,7 +15,7 @@ class CreateSchoolTable extends Migration
     {
         //
          Schema::dropIfExists('school');
-        Schema::create('school', function(Blueprint $table){
+        Schema::create('schools', function(Blueprint $table){
             $table->increments('id');
             $table->string('school_name',200);
             $table->string('address',200);

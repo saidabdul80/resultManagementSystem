@@ -147,6 +147,7 @@ Route::get('/examiner/manage-lecturer', 'ExaminerManageLecturerController@show')
 Route::get('/examiner/view-result/', 'ExaminerViewResultController@show')->name('e_view_result');
 Route::get('/examiner/view-result/{p}', 'ExaminerViewResultController@withdata')->name('echanges');
 Route::POST('/examiner/view-result/{p}', 'ExaminerViewResultController@withdata')->name('echanges1');
+Route::PUT('/examiner/view-result', 'ExaminerViewResultController@saveTrend')->name('saveTrends');
 Route::get('/examiner/e-logs', 'elogsController@show')->name('e_logs');
 Route::post('/examiner/manage-lecturer', 'ExaminerManagmentController@ExaminerPage')->name('e-managesession');
 //-------------------End Examiner-------------------------------------------////////////////////////////////

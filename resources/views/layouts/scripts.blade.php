@@ -11,6 +11,8 @@
 <script type="text/javascript" src="/assets/js/listjs/paging.js"></script>
 <script type="text/javascript" src="/assets/bootstrap/js/bootstrap.js"></script>
 <script type="text/javascript" src="/assets/bootstrap/js/datepicker.js"></script>
+<script type="text/javascript" src="/assets/js/jspdf.min.js"></script>
+<script type="text/javascript" src="/assets/js/jspdf.plugin.autotable.js"></script>
 
 <script type="text/javascript" src="/assets/js/highcharts.js"></script>
 	@if(session('status')!='')
@@ -29,3 +31,13 @@
 			}
 		</style>
 	@endif
+<script >
+	function clearSelection() {
+    if(document.selection && document.selection.empty) {
+        document.selection.empty();
+    } else if(window.getSelection) {
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+    }
+}
+</script>

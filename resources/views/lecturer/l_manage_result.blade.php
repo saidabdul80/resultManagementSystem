@@ -41,6 +41,8 @@ use Illuminate\Http\Request;
 		$selSession1 =  explode(';',$_POST['selSession']);
 		$selSession = $selSession1[0];
 		$sessionname = $selSession1[1];
+
+		$session = \App\Session::where('c_set',$selSession)->first();
 	}else{
 		$selSession = $session->id;
 		$sessionname = $session->session;
@@ -50,13 +52,33 @@ use Illuminate\Http\Request;
 	//$getTime = $conn->query("SELECT  endT FROM `f_timing` WHERE  `faculty`='$faculty_id' AND `session`='$selSession' AND  `semester`='$csemester'");
     $getTime = f_timing::where(['faculty'=>$faculty_id,'session'=>$selSession, 'semester' =>$csemester])->first();
 	//$getTime  = f_timing::where(['faculty'=>$faculty_id,'session'=>$selSession, 'semester' =>$csemester])->first();
+
+	//checking if result session is not current year
+#***************************** this will be implemented before adopting ***********************
+
+	$allowY = -1;
+	$leftY = 0;
+	$splitgt = explode('/',$session->session);
+
+	if (!is_null($splitgt)) {
 	
+		$cYear = date('Y');
+		$selectedSessionYear = $splitgt[1];
+		$leftY = $cYear - $selectedSessionYear;
+		
+		//echo $date1->diff($date2)->format("%R");
+		if($leftY > 0){
+			$allowY = 0;
+		}else{
+			$allowY = 1;
+		}
+	}	
+#***************************** End this will be implemented before adopting ***********************
 	$allow = -1;
 	$left = 0;
 	if (!is_null($getTime)) {
 		///echo "string";
 		//$gt = $getTime->fetch_assoc();
-
 		$cdate = new DateTime($date);
 		$endDate = new DateTime($getTime->endT);
 
@@ -338,7 +360,8 @@ use Illuminate\Http\Request;
 							<?php
 						
 			?>
-			</div></center><br>
+					</div>
+					</center><br>
 			<?php
 			
 				//echo $course_id = session('selected_course_id'];

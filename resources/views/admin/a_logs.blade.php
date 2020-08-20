@@ -118,7 +118,11 @@ $grade = 'App\grade';
 								</td>
 								<td style="display: flex; word-break: break-all;">
 									<?php 
+											//$diff = xdiff_string_diff(old_data, new_data)
+											dd($row->properties->attributes);
 										foreach (json_decode($row->properties) as $key => $value) {
+											//xdiff_string_diff
+
 											if($key == 'attributes'){
 												//get detail of gupnp_service_action_return(action)	
 												$emaili = user::find($value->created_by)->first()->email;

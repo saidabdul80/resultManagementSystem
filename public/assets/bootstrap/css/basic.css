@@ -738,3 +738,17 @@ footer{
     }
 
 
+.fullscreen{
+  height: 100% !important;
+  width: 100% !important;
+  position:absolute !important;
+  top:0;
+  left: 0;
+  z-index:99999999999;
+  transition: height 2s !important, width 2s !important;
+}
+.logsTable table th, .logsTable tr td {
+    border:  none;
+    border-right: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}

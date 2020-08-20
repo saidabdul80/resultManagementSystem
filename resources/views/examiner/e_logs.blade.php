@@ -101,10 +101,21 @@ $grade = 'App\grade';
 					//$ss = Activity::all();
 					//dd($ss);
 					if ($sql_run->count() > 0) {
+						$idnum = 0;
 						foreach($sql_run as $row) {
+							$idnum++;
 							//dd($row);
 							$logs = json_decode($row->properties);
 							if ($row->properties != '[]') {
+								$countn = 0;
+								foreach($logs as $a) {									
+								$countn++;
+								}
+								if($countn >1){
+									$old_data = preg_replace("/[\"\"{}]/", " ", json_encode(json_decode($row->properties)->old));									
+								}
+								$new_data = preg_replace("/[\"\"{}]/", " ", json_encode(json_decode($row->properties)->attributes));
+									
 							?>
 							<tr>
 								
@@ -117,25 +128,14 @@ $grade = 'App\grade';
 									?>
 								</td>
 								<td style="display: flex; word-break: break-all;">
-									<?php 
+									
+									<?php 								
+									//dd(json_decode($row->properties)->old);
 										foreach (json_decode($row->properties) as $key => $value) {
-											if($key == 'attributes'){
-												//get detail of gupnp_service_action_return(action)	
-												$emaili = user::find($value->created_by)->first()->email;
-												$Lecturer = Lecturer::where('email', $emaili)->first();
-												if(is_null($Lecturer)) {
-													$title = $emaili; 
-												}else{
-													$title = $Lecturer->salute.' '.$Lecturer->first_name.' ('.$Lecturer->lecture_ID.')';
-												}
-												$value->created_by = $title;
-												?>
-													<span class="text-success">
-														<?php echo preg_replace("/[\"\"{}]/", " ", json_encode($value)) ; ?>
-													</span>
-												<?php
-											}else{
+
+											if($key == 'attributes' ){
 												//get detail of actor
+
 												$emaili = user::find($value->created_by)->first()->email;
 												$Lecturer = Lecturer::where('email', $emaili)->first();
 												if(is_null($Lecturer)) {
@@ -146,14 +146,56 @@ $grade = 'App\grade';
 												$value->created_by = $title;
 
 												?> 	
+													<span class="text-success" >
+														<?php echo preg_replace("/[\"\"{}]/", " ", json_encode($value)); ?>
+													</span>
+												<?php
+
+											}else{
+												//get detail of gupnp_service_action_return(action)	
+												$emaili = user::find($value->created_by)->first()->email;
+												$Lecturer = Lecturer::where('email', $emaili)->first();
+												if(is_null($Lecturer)) {
+													$title = $emaili; 
+												}else{
+													$title = $Lecturer->salute.' '.$Lecturer->first_name.' ('.$Lecturer->lecture_ID.')';
+												}
+												$value->created_by = $title;
+												?>
 												<span class="lnr lnr-arrow-right mx-3 border pt-4 rounded  "></span>
-													<span class="text-danger">
-														<?php echo preg_replace("/[\"\"{}]/", " ", json_encode($value)) ; ?>
+													<span class="" id="<?php echo $idnum; ?>cc" >
+														<?php // echo preg_replace("/[\"\"{}]/", " ", json_encode($value)) ; ?>
 													</span>
 												<?php
 											}
 										}
 									?>
+									@if($countn> 1)
+									<script>
+									    one = '<?php echo $old_data; ?>',
+									    other = '<?php echo $new_data; ?>',
+									    color = '',
+									    span = null;
+
+									diff = Diff.diffChars(one, other),
+									    display = document.getElementById('<?php echo $idnum; ?>cc'),
+									    fragment = document.createDocumentFragment();
+
+									diff.forEach((part) => {
+									  // green for additions, red for deletions
+									  // grey for common parts
+									  const color = part.added ? 'green' :
+									    part.removed ? 'red' : '#ccc';
+									  span = document.createElement('span');
+									  span.style.color = color;
+									  span.appendChild(document
+									    .createTextNode(part.value));
+									  fragment.appendChild(span);
+									});
+
+									display.appendChild	(fragment);
+									</script>
+									@endif
 								</td>
 
 							</tr>

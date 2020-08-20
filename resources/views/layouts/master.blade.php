@@ -16,7 +16,7 @@
             <p style="margin: 0px;">EP System</p>
             <p style="margin: 0px;">{{\App\Session::where('c_set',1)->first()->session}}</p>
         </div>
-            <img src="/img/ibb logo.png" style="width:50px; height: 50px;">
+            <img src="/img/ibb logo.png" id='schoologo' style="width:50px; height: 50px;">
         </div>
         <!-- loader-->
         <div style="position: absolute; left: 43%; top:23px; color: #666; display: none; " id="loader">
@@ -135,7 +135,7 @@
                         <a href="{{route('e_manage_result')}}"><li>Manage Result<span class="lnr lnr-chevron-right"></span></li></a>
                         <a href="{{route('e_manage_lecturer')}}"><li>Manage Lecturer<span class="lnr lnr-chevron-right"></span></li></a>
                         <a href="{{route('e_view_result')}}"><li>View Result<span class="lnr lnr-chevron-right"></span></li></a>
-                        <a href="{{route('e_logs')}}"><li>View Result<span class="lnr lnr-chevron-right"></span></li></a>
+                        <a href="{{route('e_logs')}}"><li>logs<span class="lnr lnr-chevron-right"></span></li></a>
                     </ul>
            </ul>
         @endif

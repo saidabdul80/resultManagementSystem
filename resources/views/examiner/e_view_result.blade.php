@@ -6,6 +6,7 @@ use \App\Department;
 use \App\Faculty;
 use \App\Role;
 use \App\f_timing;
+use \App\School;
 use Illuminate\Http\Request;
 	
 
@@ -65,6 +66,11 @@ use Illuminate\Http\Request;
 		$failG_array = $failG_array1;
 	}
 		
+	//getting school details
+	$school = School::where('id', '=', 1)->first();
+	$dept = \App\Department::where('id',$LECTURER->department_id)->first();
+	$fact = \App\Faculty::where('id',$faculty_id)->first();
+
 	//echo ;
 	$ThePget = $p??'';
 ?>
@@ -73,12 +79,12 @@ use Illuminate\Http\Request;
 
    	.paging_two_button {
         margin: 15px;
-        position:absolute !important;
-        bottom:20px !important;
+        position:relative !important;
+        bottom:15px !important;
        }
     .dataTables_info{
-        position:absolute !important;
-        bottom: 60px !important ;
+        position:relative !important;
+        bottom: 6px !important ;
         margin:0px;
         color:#aaa;
        }
@@ -110,7 +116,7 @@ use Illuminate\Http\Request;
 </script>
 @section('content')
 	<div id="titlebar">
-			<div  id="title">Examiner<span class="lnr lnr-chevron-right"></span><i onclick="location.href='e_view_result.php';"> View Course Result</i> <?php 
+			<div  id="title">Examiner<span class="lnr lnr-chevron-right"></span><i onclick="location.href='{{ route('e_view_result') }}';"> View Course Result</i> <?php 
 			if(isset($ThePget))
 				{
 					if($ThePget==221623){
@@ -202,7 +208,7 @@ use Illuminate\Http\Request;
 					formTag.submit();
 				}
 			</script>
-			<div class="row bg-white shadow p-3 ml-5 mx-auto" style="overflow-x: scroll;" >
+			<div class="row bg-white shadow p-3 ml-5 mx-auto" style="overflow-x: scroll;" id="touchTofull1" ondblclick="toFull('touchTofull1','tableView'); clearSelection();" >
 				<?php
 					$level = $_POST['level'] ?? 1;
 					$result_array = 0;
@@ -236,28 +242,19 @@ use Illuminate\Http\Request;
 					}
 					//echo var_dump($faculty);
 				?>
-				<div style="width: 60%; display: flex;">
-					
-				<form method="post" action="pdf/course_result.php" target="_BLANK" style="width: 100px;">
-					<input type="text" name="department" value="<?php echo $LECTURER->department_id; ?>" style='display: none'>
-					<input type="text" name="level" value="<?php echo $level; ?>" style='display: none'>
-					<!-- <input type="text" name="faculty" value="<?php //echo htmlentities(json_encode($result_array)); ?>"> -->
-					<input type="text" name="semester" value="<?php echo $csemester; ?>" style='display: none'>
-					<input type="text" name="session" value="<?php echo $sessionname; ?>" style='display: none'>
-					<input type="text" name="data" value="<?php echo htmlentities(json_encode($result_array)); ?>" style='display: none'>
-					<input type="submit" value="pdf" class="btn btn-primary btn-sm rounded m-2" >
-				</form>
-				<form method="post" action="pdf/resultExcel.php" target="_BLANK" style="width: 100px;">
-					<input type="text" name="department" value="<?php echo $LECTURER->department_id; ?>" style='display: none'>
-					<input type="text" name="level" value="<?php echo $level; ?>" style='display: none'>
-					<!-- <input type="text" name="faculty" value="<?php //echo htmlentities(json_encode($result_array)); ?>"> -->
-					<input type="text" name="semester" value="<?php echo $csemester; ?>" style='display: none'>
-					<input type="text" name="session" value="<?php echo $sessionname; ?>" style='display: none'>
-					<input type="text" name="data" value="<?php echo htmlentities(json_encode($result_array)); ?>" style='display: none'>
+				<div style=" float: right !important;">
+				<button class="btn btn-primary btn-sm rounded m-2" id="printPDF">pdf</button>
+				<!-- <form method="post" action="pdf/resultExcel.php" target="_BLANK" style="width: 100px;">
+					<input type="text" name="department" value="<?php //echo $LECTURER->department_id; ?>" style='display: none'>
+					<input type="text" name="level" value="<?php// echo $level; ?>" style='display: none'>
+				
+					<input type="text" name="semester" value="<?php// echo $csemester; ?>" style='display: none'>
+					<input type="text" name="session" value="<?php// echo $sessionname; ?>" style='display: none'>
+					<input type="text" name="data" value="<?php //echo htmlentities(json_encode($result_array)); ?>" style='display: none'>
 					<input type="submit" value="excel" class="btn btn-primary btn-sm rounded m-2" >
-				</form>
-				</div>
-				<table class="table table-condensed table-hover table-bordered mx-auto listt" style="font-size: 0.9em;width: 100%;" id="">
+				</form> -->
+				</div><br>
+				<table class="table table-condensed table-hover table-bordered mx-auto listt" style="font-size: 0.9em;width: 100%;" >
 					<thead>
 						<th>S/N</th>
 						<th style="white-space: nowrap; ">Matric Number</th>
@@ -326,6 +323,80 @@ use Illuminate\Http\Request;
 						?>
 					</tbody>
 				</table>
+<!--*******************************************GRADE TABLE FRO PDF **********************************************  -->
+<div id="tableView" style="display: none;width: 98%;margin: 0px auto;">
+<table class="table table-condensed table-hover table-bordered mx-auto" style="font-size: 0.9em;width: 100%; " id="tablepdf" >
+					<thead>
+						<th>S/N</th>
+						<th style="white-space: nowrap; ">Matric Number</th>
+						<th>NAME</th>
+						<th>ME</th>
+						<th>NSS</th>
+						<th>RCU</th>
+						<th>ECU</th>
+						<th>CP</th>
+						<th>GPA</th>
+						<th>TRCU</th>
+						<th>TECU</th>
+						<th>TCP</th>
+						<th>PCGPA</th>
+						<th style="white-space: nowrap; ">COURSES OUTSTANDING</th>
+						<th>REMARK</th>
+					</thead>
+					<tbody>
+						<?php
+						$i =0;
+						if ($result_array != 0) {
+							
+							foreach ($result_array as $key => $value) {
+								$i++;
+								?>
+								<tr>
+									<td><?php echo $i; ?></td>
+									<td><?php echo $value['mat']; ?></td>
+									<td><?php echo $value['sname']; ?></td>
+									<td><?php echo $value['me']; ?></td>
+									<td><?php echo $value['nss']; ?></td>
+									<td><?php echo $value['rcu']; ?></td>
+									<td><?php echo $value['ecu']; ?></td>
+									<td><?php echo $value['cp']; ?></td>
+									<td><?php echo $value['gpa']; ?></td>
+									<td><?php echo $value['trcu']; ?></td>
+									<td><?php echo $value['tecu']; ?></td>
+									<td><?php echo $value['tcp']; ?></td>
+									<td><?php echo $value['pcgpa']; ?></td>
+									<td><?php if($value['cos']==''){echo 'Nill'; }else{echo $value['cos'];}?></td>
+									<td><?php if($value['cos']==''){echo 'In Good Standing'; }else{echo 'Deficiency';} ;?></td>
+								</tr>
+
+								<?php
+							}
+						}else{
+							?>
+							<td style="border-right:1px solid #fff;white-space: nowrap;font-size: 1.4em;">Result not compiled</td>
+							<td style="border-right:1px solid #fff;"></td>
+							<td style="border-right:1px solid #fff;"></td>
+							<td style="border-right:1px solid #fff;"></td>
+							<td style="border-right:1px solid #fff;"></td>
+							<td style="border-right:1px solid #fff;"></td>
+							<td style="border-right:1px solid #fff;"></td>
+							<td style="border-right:1px solid #fff;"></td>
+							<td style="border-right:1px solid #fff;"></td>
+							<td style="border-right:1px solid #fff;"></td>
+							<td style="border-right:1px solid #fff;"></td>
+							<td style="border-right:1px solid #fff;"></td>
+							<td style="border-right:1px solid #fff;"></td>
+							<td style="border-right:1px solid #fff;"></td>
+							<td ></td>
+							<?php
+						}
+
+						?>
+					</tbody>
+</table>
+</div>
+<!--*******************************************END GRADE TABLE FRO PDF **********************************************  -->
+
 			</div>		
 		</div>
 	@endif
@@ -358,6 +429,7 @@ use Illuminate\Http\Request;
 		<!--search result fields -->
 			<div style="display: flex;  justify-content: center;">
 				<form method="POST" action="{{route('echanges',221823)}}" style="margin-bottom: 8px;" id="formTag">
+					{{csrf_field()}}
 					<select id="levelTag" style="width: 70px !important;" name="level">
 						<option value="1" <?php if($selectedl ==1){echo 'selected';} ?> >100L</option>
 						<option value="2" <?php if($selectedl ==2){echo 'selected';} ?> >200L</option>
@@ -402,7 +474,7 @@ use Illuminate\Http\Request;
 				}
 			</script>
 					<!--End search result fields -->
-			<div class="row bg-white shadow p-3 ml-5 mx-auto" style="overflow-x: scroll;" >
+			<div class="row bg-white shadow p-3 ml-5 mx-auto" style="overflow-x: scroll; transition: width 2s, height:2s;" ondblclick="toFull('touchTofull', 'tableView1'); clearSelection();" id="touchTofull" >
 				<?php
 			
 					//$fetch_rgp = $conn->query("SELECT * FROM result_files as r INNER JOIN courses AS c ON c.id=r.course_id WHERE r.department_id='$department_id' AND r.session_id='$selected_session' AND r.semester='$selected_semester' AND c.level_id='$selectedl'");
@@ -459,33 +531,23 @@ use Illuminate\Http\Request;
 					//echo var_dump(json_encode($studentsR));
 					//echo var_dump(json_encode($theader));
 				?>
-				<div style="width: 60%; display: flex;">
-					
-				<form method="post" action="pdf/resulGradePdf.php" target="_BLANK" style="width: 100px;">
-					<input type="text" name="department" value="<?php echo $LECTURER->department_id; ?>" style='display: none'>
-					<input type="text" name="level" value="<?php echo $selectedl; ?>" style='display: none'>
-					<!-- <input type="text" name="faculty" value="<?php //echo htmlentities(json_encode($result_array)); ?>"> -->
-					<input type="text" name="semester" value="<?php echo $csemester ?>" style='display: none'>
-					<input type="text" name="session" value="<?php echo $sessionname; ?>" style='display: none'>
-					<input type="text" name="data" value="<?php echo htmlentities(json_encode($studentsR)); ?>" style='display: none'>
-					<input type="text" name="datah" value="<?php echo htmlentities(json_encode($theader)); ?>" style='display: none'>
-					<input type="submit" value="pdf" class="btn btn-primary btn-sm rounded m-2" >
-				</form>
-				<form method="post" action="pdf/resulGradeExcel.php" target="_BLANK" style="width: 100px;">
-					<input type="text" name="department" value="<?php echo $LECTURER->department_id; ?>" style='display: none'>
-					<input type="text" name="level" value="<?php echo $selectedl; ?>" style='display: none'>
-					<!-- <input type="text" name="faculty" value="<?php //echo htmlentities(json_encode($result_array)); ?>"> -->
-					<input type="text" name="semester" value="<?php echo $csemester ?>" style='display: none'>
-					<input type="text" name="session" value="<?php echo $sessionname; ?>" style='display: none'>
-					<input type="text" name="data" value="<?php echo htmlentities(json_encode($studentsR)); ?>" style='display: none'>
-					<input type="text" name="datah" value="<?php echo htmlentities(json_encode($theader)); ?>" style='display: none'>
+				<div >
+				<button class="btn btn-primary btn-sm rounded m-2 d-inline" id="printPDF">pdf</button>
+				
+				<!-- <form method="post" action="pdf/resulGradeExcel.php" target="_BLANK" style="width: 100px;">
+					<input type="text" name="department" value="<?php// echo $LECTURER->department_id; ?>" style='display: none'>
+					<input type="text" name="level" value="<?php// echo $selectedl; ?>" style='display: none'>
+					<input type="text" name="semester" value="<?php// echo $csemester ?>" style='display: none'>
+					<input type="text" name="session" value="<?php// echo $sessionname; ?>" style='display: none'>
+					<input type="text" name="data" value="<?php //echo htmlentities(json_encode($studentsR)); ?>" style='display: none'>
+					<input type="text" name="datah" value="<?php //echo htmlentities(json_encode($theader)); ?>" style='display: none'>
 					<input type="submit" value="excel" class="btn btn-primary btn-sm rounded m-2" >
-				</form>
-				<p style="min-width: 240px !important;">Totoal Average Failed: <input type="text" id="tavgF" style="width: 80px !important;" disabled="" value="0"> </p>
-				<p style="min-width: 240px !important;">Totoal Average Pass: <input type="text" id="tavgP" style="width: 80px !important;" disabled="" value="0"></p>
-				<input type="button" id="saveTrend" value="<?php echo ($result_trend_key==-1)?'not ready':'save';?>" <?php echo ($result_trend_key==-1)?'disabled': ($result_trend_key==0)?'' : 'disabled';?> class="btn <?php echo ($result_trend_key==-1)?'btn-secondary':'btn-info';?>  p-0 rounded" style='width:80px !important;'>
+				</form> -->
+				<p style="min-width: 240px !important;" class="d-inline">Totoal Average Failed: <input type="text" id="tavgF" style="width: 80px !important;" disabled="" value="0"> </p>
+				<p style="min-width: 240px !important;" class="d-inline">Totoal Average Pass: <input type="text" id="tavgP" style="width: 80px !important;" disabled="" value="0"></p>
+				<input type="button" id="saveTrend" value="<?php echo ($result_trend_key==-1)?'not ready':'save';?>" <?php echo ($result_trend_key==-1)?'disabled': ($result_trend_key==0)?'' : 'disabled';?> class="btn <?php echo ($result_trend_key==-1)?'btn-secondary':'btn-info';?>  p-0 rounded d-inline" style='width:80px !important;'>
 				</div>
-				<table class="table table-condensed table-bordered table-hover listt" style="width: 1200px;">
+				<table class="table table-condensed table-bordered table-hover listt" style="width: 1200px; ">
 					<thead>
 						<th>S/N</th>
 						<th>Matric Number</th>
@@ -570,7 +632,67 @@ use Illuminate\Http\Request;
 						?>
 					</tbody>
 				</table>
-				
+<!--*******************************************GRADE TABLE FOR PDF **********************************************  -->
+<div id="tableView1" style="display: none;width: 98%;margin: 0px auto;">
+<table class="table table-condensed table-bordered table-hover" style="width: 1200px;" id="tablepdf">
+					<thead>
+						<th>S/N</th>
+						<th>Matric Number</th>
+							<?php
+							foreach ($theader as $key => $value) {
+								$thc = explode('+', $value);
+								?>
+								<th style="text-align: center;"><?php echo $thc[0].'<br>'.$thc[1]; ?> </p></th>
+								<?php
+							}
+							?>
+					</thead>
+					<tbody>
+						<?php
+						$num =0;
+							foreach ($studentsR as $key => $value) {
+								sort($value);
+								$num++;
+								//var_dump(json_encode($value));failG_array
+								?>
+								<tr>
+									<td><?php echo $num.'.';?></td>
+									<td><?php echo $key;?></td>
+									<?php
+									   //$stack = $theader;
+										for ($i=0; $i <sizeof($value); $i++){
+											$hc = explode('+', $theader[$i]);
+
+											if($hc[0] == $value[$i][0]){
+												if (in_array($value[$i][2], $failG_array)) {
+													?>
+													<script>
+														
+													</script>
+													<?php
+												}
+											?>
+												<script>
+													//count total in the course
+													
+												</script>
+												<td><?php echo $value[$i][2]; ?></td>
+											<?php
+											}else{
+												echo "<td></td>";
+											}
+										}
+									?>
+								</tr>
+								<?php
+							}
+							?>
+							
+					</tbody>
+</table>
+</div>
+<!--***********************************************************************************************************  -->
+
 			</div>		
 		</div>
 		</div>
@@ -585,6 +707,7 @@ use Illuminate\Http\Request;
 	</div>
 	
 </div>
+
 @include('layouts/scripts')
 
 <script>
@@ -601,36 +724,119 @@ use Illuminate\Http\Request;
     "bStateSave": true
 });
  $('#saveTrend').click(function(){
- 		var passFail =  $('#tavgP').val() +','+ $('#tavgF').val();
+
+ 	var passFail =  $('#tavgP').val() +','+ $('#tavgF').val();
  		var slevel = '<?php echo @$selectedl;?>';
  		var ssession = '<?php echo @$selSession;?>';
  		var ssemester = '<?php echo @$csemester?>';
  		var sdepartment = '<?php echo @$LECTURER->department_id;?>';
- 		$.post('misc/save_r_trend.php', {pf:passFail,level:slevel,session:ssession,semester:ssemester,department:sdepartment}, function(data){
- 			console.log(data);
- 				if (data ==1){
-	 				Swal.fire({
-						position: 'top-end',
-						title: 'Result Trend Saved',
-						type: 'success',
-						showConfirmButton: false,
-						timer: 2000
-					}).then((result)=>{
-						location.reload();
-					});
-				}else{
-					Swal.fire({
-						type: 'error',
-						title: 'Cannot perform this action',
-						text: 'maybe server down or no network',
-						showConfirmButton: true
-					});
-				}
- 			$('#loader').hide();
- 		});
- 		$('#loader').show();
+ 	$.ajax({
+		type: 'PUT',
+		url:  "{{route('saveTrends')}}",
+		data: {pf:passFail,level:slevel,session:ssession,semester:ssemester,department:sdepartment, _token:'{{ csrf_token() }}' },
+		success: function(data){
+		$("#loader").hide();
+		//console.log(data.success==200);
+			if(data.success==200){
+				Swal.fire({
+				position: 'top-end',
+				title: 'Result Trend Saved',
+				type: 'success',
+				showConfirmButton: false,
+				timer: 2000
+			}).then((result)=>{
+				location.reload();
+			});
+			}else if(data.success == 407){
+				Swal.fire({
+					type: 'error',
+					title: 'Cannot perform this action',
+					text: 'maybe server down or no network',
+				});
+			}
+		},
+		error: function(data){
+		console.log(data);
+		}
+	});
+	$("#loader").show();
  });
 });
 
+ //print to pdf with jspdf and autotablejs
+ $('#printPDF').click(function(){
+ 	var spreadRsult = document.getElementById('tablepdf');
+ 	var schoolname = '<?php echo ucwords($school->school_name); ?>';
+ 	var facultyname = '<?php echo $fact->faculty; ?>';
+ 	var departmentname = '<?php echo $dept->department; ?>';
+ 	var sessionname = '<?php echo $sessionname; ?>';
+ 	var level = '<?php switch ($level??'') {
+									case 1:
+										echo 100;
+										break;
+									case 2: 
+										echo 200;
+										break;
+									case 3:
+										echo 300;
+									case 4:
+										echo 400;
+									case 5:
+										echo 500;
+									default:
+										echo '';							
+								}?>';
+ 	var semester = '<?php echo $csemestername; ?>';
+ 	/*var levelc = document.getElementById('departmentname').innerText;
+ 	var sessionc = document.getElementById('departmentname').innerText;
+ 	var semesterc = document.getElementById('departmentname').innerText;*/
+
+ 	pdf = new jsPDF('l', 'pt', 'a4');
+
+ 	pdf.setFontSize(18);
+	pdf.setFontType("bold");
+	pdf.setFont("Arial");
+	pdf.text(schoolname,450, 40 , 'center');
+	pdf.setFontType("normal");	
+	pdf.text('Faculty of '+facultyname ,450, 65 , 'center');
+	pdf.text('Department of '+departmentname,450, 85 , 'center' );
+	pdf.setFontSize(14);
+	pdf.text(semester + '  ' +  sessionname + '  ' + level + 'level',450, 105 , 'center');
+	
+	
+	
+	pdf.setFontSize(10);
+ 	var imgData = new Image();
+	imgData.src = '/img/ibb logo.png';
+ 	pdf.addImage( imgData, 'PNG', 30, 20, 50,0);
+ 	var res = pdf.autoTableHtmlToJson(document.getElementById("tablepdf"));
+  	pdf.autoTable(res.columns, res.data, {margin: {top: 130}}); 	
+	pdf.save("download.pdf");
+
+ });
+
+function toFull(a, b){
+var screenElem = document.getElementById(a);
+var tableV = document.getElementById(b);
+var mainTable = document.getElementById('DataTables_Table_0_wrapper');
+	if(screenElem.classList.contains('fullscreen')){
+    	screenElem.classList.remove('fullscreen');
+    	//tableAdjust.classList.remove('tableAdjust');
+    	tableV.style.display = 'none';
+    	mainTable.style.display = 'block';
+    }else{
+    	screenElem.classList.add('fullscreen');	
+    	tableV.style.display = 'block';
+    	mainTable.style.display = 'none';
+    	//tableAdjust.classList.add('tableAdjust');	
+    }
+	/*if(screenElem.classList.contains('full')){
+    	screenElem.classList.remove('full');
+    	screenElem.classList.add('fullscreen');
+    }else{
+    	screenElem.classList.remove('fullscreen');
+    	screenElem.classList.add('full');
+    }*/
+}
 </script>
 @endsection

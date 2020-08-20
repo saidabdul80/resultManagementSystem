@@ -9,9 +9,10 @@ class Grade extends Model
 {
 	 
 	use LogsActivity;
+
     protected $fillable = ['*'];
 
-    protected static $logAttributes = ['*'];
+    protected static $logAttributes = ['name', 'created_by', 'created_on'];
     public $timestamps = false;
     //
 }

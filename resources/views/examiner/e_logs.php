@@ -1,66 +1,60 @@
+
+
 <?php
-	include '../php/dbconnect.php';
-	$logged_in_user_department_id = $_SESSION['department_id'];
-	$logged_in_usr_id = $_SESSION['user_id'];
+use \App\User;
+use \App\Lecturer;
+use \App\Session;
+use \App\Department;
+use \App\Faculty;
+use \App\Role;
+use \App\f_timing;
+$current_session_id = \App\Session::where('c_set',1)->first()->id;
+	$logged_in_usr_id = Auth::user()->id;
+  $session = \App\Session::where('c_set',1)->first();
+  $semester = \App\Semester::where('c_set',1)->first();
+  $isLecturer = Lecturer::where('email', Auth::user()->email)->first();
+  //dd($isLecturer->department_id);
+  $date = date('Y-m-d');
+  if (!is_null($isLecturer)) {
+    $user_department_id = $isLecturer->department_id;
+  
+    $Lecturer_Id = $isLecturer->lecture_ID;
+    $faculty_id = Department::where('id', $user_department_id )->first()->faculty_id;
+    # code...
+  }else{
+    $faculty_id = 1;
+  }
+  //echo $date;
+  //preparing this for left_pane.php
+  if (isset($_POST['selSemester'])) {
+    $csemester = $_POST['selSemester'];
+    $csemestername = ($csemester==1)?'first semester':'second semester';
+  }else{
+    $csemester = $semester->id;
+    $csemestername = $semester->semester;
+  }
 
-	if (isset($_POST['selSemester'])) {
-		$csemester = $_POST['selSemester'];
-	}else{
-		$csemester = $_SESSION['current_set_semester_id'];
-	}
+  if(isset($_POST['selSession'])){ 
+    $selSession1 =  explode(';',$_POST['selSession']);
+    $selSession = $selSession1[0];
+    $sessionname = $selSession1[1];
+  }else{
+    $selSession = $session->id;
+    $sessionname = $session->session;
+  }
 
-	if(isset($_POST['selSession'])){ 
-		$selSession = $_POST['selSession'];
-	}else{
-		$selSession = $_SESSION['current_set_session_id'];
-	}
-
-	require('class/left_pane.php');
-	
-	//echo ;
+  
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-	<title>dashboard</title>
-	<?php	require  '../php/css2.php';	?>
-	 <style type="text/css">
-   
-   	.paging_two_button {
-        margin: 15px;
-        position:absolute;
-        bottom: -60px;
-       }
-    .dataTables_info{
-        position:absolute;
-        bottom: -20px ;
-        margin:10px;
-        color:#aaa;
-       }
-       td{
-       	padding: 2px !important;
-       }
-       td p,td{
-       	margin: 1px;
-       	font-size: 0.9em;
-       }
-  </style>
-</head>
-<body class="">
-<?php
-	include '../php/header2.php';
-	include '../php/checklogin.php';
-?>
-	<div id="containerA" class="containerA">
-		<div id="titlebar">
-			<div  id="title">Examiner<span class="lnr lnr-chevron-right"></span><i> logs</i></div>
+@extends('layouts/master')
 
-			<div id="msg">Messages<a href=""><span class="badge badge-primary">3</span></a></div>
-		</div>
-		<!--CONTENT AREA START-->
+@section('content')
+<div id="titlebar">
+	<div  id="title">Examiner<span class="lnr lnr-chevron-right"></span><i> logs</i></div>
+	<div id="msg">Messages<a href=""><span class="badge badge-primary">3</span></a></div>
+</div>
+<!--CONTENT AREA START-->
 		<div class="innerContent" style="padding-top: 15px;">
 		<div class="row" style="margin-left: -3px;">
-
 			<div class="col-lg-10 col-md-10  mx-auto">
 				<table class="table table-bordered table-hover" id="listt">
 					<thead>
@@ -86,18 +80,8 @@
 			</div>
 		</div>		
 		</div>
-	</div>
-            
-		<!--CONTENT AREA END-->
-	</div>
-
-</div>
-	<footer><span style="">© 2020 saidabdul project</span> </footer>
-
-
-<?php
-  include '../php/js2.php';
-?>
+@include('layouts/scripts')
+@endsection
 <script>
  $(document).ready(function(){
 
@@ -116,4 +100,4 @@
 
 </script>
 </body>
-</html>
+</html>   

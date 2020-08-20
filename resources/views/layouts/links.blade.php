@@ -11,6 +11,7 @@
 	<link rel="stylesheet" type="text/css" href="/assets/icofont/icofont.min.css">
 	<link rel="stylesheet" type="text/css" href="/assets/js/listjs/PagingStyle.css">
 	<script type="text/javascript" src="/assets/js/jquery-1.10.2.js"></script>
+	<script type="text/javascript" src="/assets/js/diff.js"></script>
 	 <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
