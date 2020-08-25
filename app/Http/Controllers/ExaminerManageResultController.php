@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-	  
+use Auth;
 class ExaminerManageResultController extends Controller
 {
     //
@@ -45,8 +45,32 @@ class ExaminerManageResultController extends Controller
         $currentsession = str_replace('/', '-', \DB::table('sessions')->where('c_set',1)->first()->session );
         $token = $currentsession.'-'.$currentsemester.'-';
 
+        
+        $injson = [
 
+            "attributes"=>[
+                $currentsession.'-'.$currentsemester.'-'.$request->input('level')."level Resulty compiled",
+                "created_by" => Auth::user()->id,
+                "created_on"=> $date
+            ]
 
+        ];
+        
+//*******************************LOG ACTIVITY*****************************************************************
+
+    \DB::table('activity_log')->insert(['id'=>null,'log_name'=>'default','description'=>'touched','subject_id'=>Auth::user()->id, 'subject_type' => 'App\compiled_r', 'causer_id' => Auth::user()->id, 'causer_type' => 'App\compiled_r','properties' => json_encode($injson), 'created_at' => $date, 'updated_at' => $date ]);
+        /*$logs =  new \App\activity_log;
+        $logs->log_name = 'default';
+        $logs->description = 'touched';
+        $logs->subject_id = Auth::user()->id;
+        $logs->subject_type = 'App\compiled_r';
+        $logs->causer_id = Auth::user()->id;
+        $logs->causer_type = 'App\compiled_r';        
+        $logs->properties = '{"attributes":{"'.$currentsession.'-'.$currentsemester.'-'.$request->input('level').'level Resulty compiled","created_by":"'.Auth::user()->id.'","created_on":"'.$date.'"}}';
+        $logs->created_at = $date;
+        $logs->updated_at = $date;
+        $logs->save();*/
+//******************************* END LOG ACTIVITY*****************************************************************
                 /*
         $t_raw = explode('-', $_POST['token']);
         $token = $t_raw[0].'-'.$t_raw[1].'-'.$t_raw[2].'-';

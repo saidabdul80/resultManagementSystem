@@ -11,4 +11,7 @@ class ManageLecturerLogsController extends Controller
     	$this->middleware('auth');
     }
     
+    public function show(){
+    	return view('/lecturer/l_logs');
+    }
 }

@@ -502,7 +502,8 @@ use Illuminate\Http\Request;
           		$existMatric = '';
           		$FailedLines = '';
           		$error = 0;
-          	
+          		$succex = 0;
+          		$successMat = array();
 				$course_idUpload = $course_idUpload;
 				$ex = explode('.', basename($path));
           		
@@ -566,6 +567,7 @@ use Illuminate\Http\Request;
 									$student_id ='';
 									foreach($studentDATA as $rw) {
 				          				if($rw->matric_number == $matric ){
+				          					$successMat[] = $rw->matric_number;
 				          					$student_id =  $rw->student_id;
 				          					?>
 				          						<script>
@@ -588,7 +590,7 @@ use Illuminate\Http\Request;
 							 				'result_token'=>$token_raw,
 							 				'status' => 1
 							 			];
-									 
+									 $succex = 1;
 									}else{
 
 										if ($matric !='' AND $score != ''){
@@ -603,15 +605,14 @@ use Illuminate\Http\Request;
 							}
 
 
-							if($error <1){
+							if($succex > 0 ){
+								
 								$sendmsg= 'success';
 								
 								$up000 = \App\Grade::where('c_set',1)->first();
 								$updateGrade = \App\Grade::find($up000->id);
 								$updateGrade->status = 1;
-								$updateGrade->save();
 								
-								if(DB::table('results')->insert($allData)){
 									$sqlinsert_run = new \App\Result_file;
 									$sqlinsert_run->lecturer_id = $LECTURER->id;
 									$sqlinsert_run->result_token = $token_raw;
@@ -620,8 +621,52 @@ use Illuminate\Http\Request;
 									$sqlinsert_run->session_id = $selSession;
 									$sqlinsert_run->semester = $csemester;
 									$sqlinsert_run->status = 0;
+								
+								if ($error <1) {
+									$updateGrade->save();
+									DB::table('results')->insert($allData);
 									$sqlinsert_run->save();
+
+									//logs activity
+									$injson = [
+
+							            "attributes"=>[
+							                $ex[0]." Result file was uploaded Successfully",
+							                "created_by" => Auth::user()->id,
+							                "created_on"=> $date
+							            ]
+
+							        ];
+							   		//end logs activity   
+
+								}else{
+									$updateGrade->save();
+									DB::table('results')->insert($allData);
+									$sqlinsert_run->save();
+
+									$sendmsg = "<b>ISSUES ENCOUNTER</b>";
+									$sendmsg .= "<div style='font-family:arial; color:#a11; font-size:0.9em;' id='isu111'>";
+									$FailedL = explode('+', $FailedLines);
+									foreach($FailedL as $key => $val){ 
+									    $sendmsg .= $val;
+									}
+									   	$sendmsg .= "</div>";
+
+									//logs activity
+									$injson = [
+							            "attributes"=>[
+							                $ex[0]." Result file uploaded Successfull on ".implode($successMat, ','),
+							                "created_by" => Auth::user()->id,
+							                "created_on"=> $date
+							            ]
+
+							        ];
+							    	//end logs activity   
 								}
+								
+								
+
+								
 							}else{
 								$sendmsg = "<b>ISSUES ENCOUNTER</b>";
 								$sendmsg .= "<div style='font-family:arial; color:#a11; font-size:0.9em;' id='isu111'>";
@@ -630,9 +675,25 @@ use Illuminate\Http\Request;
 								  	//$sendmsg .= " <span class='badge badge-dark text-white'> ".$val. "</span>";
 								    $sendmsg .= $val;
 								}
-								   	$sendmsg .= "</div>";
+								$sendmsg .= "</div>";
+								
+								//logs activity
+								$injson = [
+
+							            "attributes"=>[
+							                $ex[0]."Result file upload attempt was not Successfull",
+							                "created_by" => Auth::user()->id,
+							                "created_on"=> $date
+							            ]
+
+							        ];
+							    //end logs activity
 							}
+							
 							//create logs 
+							//subject_type will be used as uploaded file name/path
+							\DB::table('activity_log')->insert(['id'=>null,'log_name'=>'default','description'=>'Result Upload','subject_id'=>Auth::user()->id, 'subject_type' => $path, 'causer_id' => Auth::user()->id, 'causer_type' => 'App\Result_file','properties' => json_encode($injson), 'created_at' => $date, 'updated_at' => $date ]);
+							//end create logs
 										
 						?>
 						<form method="POST" action="{{route('lchanges')}}" id="formMsg1">

@@ -49,6 +49,7 @@ use Illuminate\Http\Request;
 	//$department_id = $_SESSION['department_id'];
 
 
+        
 	//total courses in department
 	$total_course =0;
 /*	$fetch_TC1 = $conn->query("SELECT *, l.lecturer_id as lid, c.id as cid FROM lecturer_allocated_courses AS l INNER JOIN courses as c ON c.id=l.course_id INNER JOIN level as le ON le.id=c.level_id INNER JOIN users as u ON u.id=l.lecturer_id WHERE l.session_id='$selSession' AND c.semester='$csemester' AND l.department_id='$logged_in_dept_id'");*/

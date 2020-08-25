@@ -96,7 +96,8 @@ $grade = 'App\grade';
 					<tbody>
 				<?php
 					
-					$sql_run = activity_log::where('subject_type',$resultFile)->orWhere('subject_type',$resultTrend)->orWhere('subject_type',$grade)->orWhere('subject_type',$spreadGp)->orderBy('id', 'desc')->get();
+					$sql_run = activity_log::where('subject_type',$resultFile)->orderBy('id', 'desc')->get();
+					//$sql_run = activity_log::where('subject_type',$resultFile)->orWhere('subject_type',$resultTrend)->orWhere('subject_type',$grade)->orWhere('subject_type',$spreadGp)->orderBy('id', 'desc')->get();
 					//dd($sql_run);
 					//$ss = Activity::all();
 					//dd($ss);
@@ -119,7 +120,7 @@ $grade = 'App\grade';
 								<td style="display: flex; word-break: break-all;">
 									<?php 
 											//$diff = xdiff_string_diff(old_data, new_data)
-											dd($row->properties->attributes);
+											
 										foreach (json_decode($row->properties) as $key => $value) {
 											//xdiff_string_diff
 

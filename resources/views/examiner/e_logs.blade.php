@@ -96,7 +96,8 @@ $grade = 'App\grade';
 					<tbody>
 				<?php
 					
-					$sql_run = activity_log::where('subject_type',$resultFile)->orWhere('subject_type',$resultTrend)->orWhere('subject_type',$grade)->orWhere('subject_type',$spreadGp)->orderBy('id', 'desc')->get();
+					//$sql_run = activity_log::where('subject_type',$resultFile)->orWhere('subject_type',$resultTrend)->orWhere('subject_type',$grade)->orWhere('subject_type',$spreadGp)->orderBy('id', 'desc')->get();
+					$sql_run = activity_log::where('subject_type','App\compiled_r')->orderBy('id', 'desc')->get();
 					//dd($sql_run);
 					//$ss = Activity::all();
 					//dd($ss);
