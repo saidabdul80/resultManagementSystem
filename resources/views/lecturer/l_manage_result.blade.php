@@ -8,7 +8,7 @@ use \App\Faculty;
 use \App\Role;
 use \App\f_timing;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Route;
 
 	$logged_in_usr_id = Auth::user()->id;
 	$session = \App\Session::where('c_set',1)->first();
@@ -38,11 +38,13 @@ use Illuminate\Http\Request;
 	}
 
 	if(isset($_POST['selSession'])){ 
-		$selSession1 =  explode(';',$_POST['selSession']);
+		$selSession1 =  explode(',',$_POST['selSession']);
 		$selSession = $selSession1[0];
 		$sessionname = $selSession1[1];
 
-		$session = \App\Session::where('c_set',$selSession)->first();
+		$session = \App\Session::where('id',$selSession)->first();
+		//dd($session);
+		
 	}else{
 		$selSession = $session->id;
 		$sessionname = $session->session;
@@ -115,7 +117,8 @@ use Illuminate\Http\Request;
 		}
 	}
 	$date = date('Y-m-d');
-	$token_raw = str_replace('/', '-', $sessionname).'-'.$semester->id.'-'.session('selected_course_code')??'';
+	$token_raw = str_replace('/', '-', $sessionname).'-'.$csemester.'-'.session('selected_course_code')??'';
+	
 	$uri = explode('/',url()->current());
  	//echo $path??'';
 		$ThePget = $p??'';
@@ -355,8 +358,8 @@ use Illuminate\Http\Request;
 					<center>
 						
 					<div class="top-info">
-						<button style="float: left; background: transparent;" class="btn btn-sm btn-light icofont-thumbs-up text-success" id="accept"></button>
-						<button style="float: left; background: transparent;" class="btn btn-sm btn-light icofont-trash text-danger" id="delete"></button><br>
+						<button style="float: left; background: transparent;" class="btn btn-sm btn-light icofont-thumbs-up text-success" <?php echo $allow == 1 ? 'id="accept"' : 'disabled="disabled"';?> ></button>
+						<button style="float: left; background: transparent;" class="btn btn-sm btn-light icofont-trash text-danger" <?php echo $allow == 1 ? 'id="delete"' : 'disabled="disabled"';?> ></button><br>
 							<?php
 						
 			?>
@@ -446,7 +449,7 @@ use Illuminate\Http\Request;
 					$session_id = $session;
 					$session_name =  $sessionname;
 				}							
-				$studentDATA = DB::table('Students_registered_courses','sr')
+				$studentDATA = DB::table('students_registered_courses','sr')
 						->join('students', 'students.id','=','sr.student_id')
 						->join('courses', 'courses.id','=','sr.course_id')
 						->where(['sr.session_id'=>$session->id, 'sr.semester'=>$semester->id, 'sr.course_id'=>session('selected_course_id')??''])->get();
@@ -477,20 +480,12 @@ use Illuminate\Http\Request;
 			<input type="text" name="token_raw" class="toTime" value="{{ $token_raw??''  }}" style='display: none;'>
 			<input type="file" name="fileUpload" class="toTime" id="fileUpload" accept=".xlsx,.csv,.xls" required=""><br><br>
 			<input type="submit" name="UploadFile" class="toTime" onclick="//validateWithJs();" value="Upload" class="form-control btn btn-success" style="width: 150px !important; display: block;">
-			<script>
-				/*function validateWithJs(event){
-					event.preventDefault();
-					var file = document.getElementById('fileU');
-					if(fileU.files.length){
-						var parts = fileU.files[0].split('.');
-						alert(parts[1]);
-					}
-				}*/
-			</script>
+	
 		</form>
 		<br>
-		<!-- $(this).click(function(){if(<?php// echo $note; ?>==0){$('#noted').show(200);}}) -->
-		
+	
+		</div>
+	</div>
 		<?php
 			}
 		?>
@@ -702,7 +697,7 @@ use Illuminate\Http\Request;
 							<input type="text" name="type" value="11" style='display: none;' >
 						</form>
 						<script type="text/javascript">
-							//		alert(<?php// echo $sendmsg;?>)
+						
 							document.getElementById('formMsg1').submit();
 						</script>
 				@endif

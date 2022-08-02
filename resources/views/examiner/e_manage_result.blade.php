@@ -56,8 +56,7 @@ use Illuminate\Http\Request;
 	$fetch_TC1 = DB::table('lecturer_allocated_courses','l')->select('*', 'l.lecturer_id as lid', 'courses.id as cid')
 				->join('courses', 'courses.id','=','l.course_id')
 				->join('levels', 'levels.id','=', 'courses.level_id')
-				->where(['l.session_id'=>$selSession, 'courses.semester'=> $csemester, 'l.department_id'=>$LECTURER->department_id])->get();
-
+				->where(['l.session_id'=>$selSession, 'courses.semester'=> $csemester, 'l.department_id'=>$LECTURER->department_id])->get();		
 	if($fetch_TC1->count()>0) {
 		$total_course = $fetch_TC1->count();
 		$lev = 100;
@@ -93,12 +92,9 @@ use Illuminate\Http\Request;
 		}
 	}
 	
-
 	//total courses uploaded
 	$total_upload = 0;
-	/*
-	$fetch_TC = $conn->query("SELECT *, l.lecturer_id as lid, c.id as cid FROM lecturer_allocated_courses AS l INNER JOIN courses as c ON c.id=l.course_id INNER JOIN level as le ON le.id=c.level_id INNER JOIN users as u ON u.id=l.lecturer_id WHERE l.session_id='$selSession' AND c.semester='$csemester' AND l.department_id='$logged_in_dept_id'");*/
-	//echo $fetch_upload->count();
+	
 	
 ?>
 
@@ -125,11 +121,15 @@ use Illuminate\Http\Request;
        	border: 1px solid #ccc;
        	color: #555 !important;
        }
+       .compileD a{
+           padding:8px 10px;
+           display:block;
+           text-align:center;
+       }
     .compileD{
     display: none;
     position: absolute;
     z-index: 10000; 
-    
     border-radius:5px; 
     text-align: left;
 	}
@@ -246,7 +246,7 @@ use Illuminate\Http\Request;
 				</div>
 				<div class="col-lg-6 col-md-6 mb-1" style="height: 400px;border: 1px solid #eee;">
 					<p class="bg-light p-1 m-0 text-center text-secondary mb-3 mt-2"><strong>Result Left to be Upload By:</strong></p>
-					<table class="table table-stripped table-bordered" id="table02" style="display: none;">
+					<table class="table table-stripped table-bordered table-hover" id="table02" style="display: none;">
 						<thead>
 							<th>Level</th>
 							<th>Lecturer</th>
@@ -257,26 +257,34 @@ use Illuminate\Http\Request;
 								if($fetch_TC1->count()>0) {
 									$confirmed_r =0;
 									$total_upload =0;
+								//	$counterNum = 0;
 									foreach($fetch_TC1 as $fu){
 										$lid = $fu->lid;
 										$cid = $fu->cid;
-										/*$fresult = $conn->query("SELECT * FROM users as u INNER JOIN lecturers as l ON l.email=u.username INNER JOIN result_file as r ON r.lecturer_id=l.lecture_ID WHERE u.id='$lid' AND r.course_id='$cid' AND r.session_id='$selSession' AND r.semester='$csemester' AND r.department_id='$logged_in_dept_id' ORDER BY r.result_confirm_by_lect ASC");*/
+									
 										$fuu = DB::table('lecturers', 'l')
 												   ->join('result_file', 'result_file.lecturer_id', '=', 'l.id')
 												   ->where(['result_file.course_id'=>$cid, 'result_file.session_id'=>$selSession, 'result_file.semester'=>$csemester, 'result_file.department_id'=> $LECTURER->department_id])
 												   ->first();
+												   
 										if (!is_null($fuu)) {
-										//$fuu = $fresult->fetch_assoc();
-										if ($fuu->result_confirm_by_lect==1) {$confirmed_r++;}
+										
+										if ($fuu->result_confirm_by_lect == 1) {$confirmed_r++;}
 										$total_upload++;
-										}else{/*
-										$fresult = $conn->query("SELECT * FROM users as u INNER JOIN lecturers as l ON l.email=u.username WHERE u.id='$lid'");
-										$fuu = $fresult->fetch_assoc();*/
+										}else{
+										    $lecturer_info = DB::table('lecturers', 'l')
+												   ->join('lecturer_allocated_courses', 'lecturer_allocated_courses.lecturer_id', '=', 'l.id')
+												   ->where(['lecturer_allocated_courses.course_id'=>$cid, 'lecturer_allocated_courses.session_id'=>$selSession, 'lecturer_allocated_courses.department_id'=> $LECTURER->department_id])
+												   ->first();
+										    
+										/*    $counterNum++;
+										    $notificationID = $lecturer_info->id.$counterNum;*/
 										?>
 										<tr>
 											<td><?php echo $fu->level;?></td>
-											<td><?php echo ucwords($fuu->first_name.' '.$fuu->surname).' '.$fuu->lecture_ID; ?></td>
-											<td><?php echo $fu->course_code;?> </td>
+											<td><?php echo ucwords($lecturer_info->first_name).' '.ucwords($lecturer_info->surname).' '.$lecturer_info->lecture_ID; ?></td>
+											<td><?php echo $fu->course_code; ?> </td>
+											
 										</tr>
 										<?php
 

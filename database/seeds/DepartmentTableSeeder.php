@@ -13,8 +13,8 @@ class DepartmentTableSeeder extends Seeder
     {
         DB::table('departments')->delete();
         DB::table('departments')->insert([
-        	'department'  => 'Computer Science',
-            'department_abbr' => 'CSC',
+        	'department'  => 'Test Department',
+            'department_abbr' => 'TD',
             'faculty_id' => '1',
             'status' => '0'
         ]);

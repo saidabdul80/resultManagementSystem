@@ -9,10 +9,10 @@ use \App\Role;
 
 
 if(session('facultyname')!=''){
-  $Lecturers = Lecturer::where('department_id',session('departmentid'))->get();
+  $Lecturers = Lecturer::with('user')->where('department_id',session('departmentid'))->get();
 //  return dd($Lecturers);
 }else{
-  $Lecturers = Lecturer::get();
+  $Lecturers = Lecturer::with('user')->get();
 }
 
 $Departments = Department::all();
@@ -42,7 +42,7 @@ function departmentidR($id){
 			<div id="msg">Messages<a href=""><span class="badge badge-primary">3</span></a></div>
 		</div>
 		<!--CONTENT AREA START-->
-		  <div class="innerContent mx-auto" style="">
+		  <div class="innerContent mx-auto" id="app">
         <div class="row">
     
       <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3 userList" style="height: 530px;">
@@ -57,76 +57,9 @@ function departmentidR($id){
           </thead>
           <tbody>
             @if($Lecturers != null)
-
-            <?php
-              $exist_role = array();
-              $user_d = array();
-             
-            $i=-1;
-
-             foreach($Lecturers as $row){
-              $i++;
-              	$id = $row->id;
-                $uid = $row->email;
-                $fname = $user_d[$i][] = ucfirst($row->first_name).' '.ucfirst($row->surname);
-                $lectID = $row->lecture_ID;
-                $user_d[$i] = array();
-                $user_d[$i][] = $uid;
-                $user_d[$i][] = ucfirst($row->first_name).' '.ucfirst($row->surname);
-                $user_d[$i][] = $row->lecture_ID;
-                
-                //get lecturer from user table to get role ids
-                $userforRole  = User::where('email', '=', $uid)->first();
-
-                $role_ids = array_map('intval', explode(',', $userforRole->role_id)) ;
-                $userRolesData = Role::whereIn('id',$role_ids)->get();
-                $rolename ='';
-                $roleId ='';
-                $roleArrayname =array();
-                $roleArrayid =array();
-
-                foreach ($userRolesData as $roledat) {
-                  $roleArrayname[]= $roledat->role;
-                  $roleArrayid[]= $roledat->id;
-                  $rolename .= $roledat->role.', ';
-                  $roleId .= $roledat->id.', ';
-                }
-
-                $rolename = rtrim(trim($rolename),',');
-                $roleId =rtrim(trim($roleId), ',');
-                ?>
-                <tr>
-                  
-                  <td id="<?php echo 'list'.$id; ?>" ><span class="lnr  lnr-user s3"></span><span class="name">{{ $fname }} ({{ $lectID }})</span></td>
-                </tr>
-                  <script>
-                    document.getElementById("{{ 'list'.$id }}").onclick = function(){
-                      var sinfo = <?php echo json_encode($user_d[$i]);?>;
-                      var roleDataname = <?php echo json_encode($roleArrayname);?>;
-                      var roleDataid = <?php echo htmlentities(json_encode($roleArrayid));?>;
-                      var rolename = '<?php echo $rolename; ?>';
-                      var roleid = '<?php echo $roleId ;?>';
-//                     console.log(rolename);
-                      var options ='';
-                      var roleDatas ='';
-
-                      for (var i = 0; i < roleDataname.length; i++) {
-                        options += '<option value="'+roleDataid[i]+','+roleDataname[i]+'">'+roleDataname[i]+'</option>';
-                      }
-                      document.getElementById('roleToremove').innerHTML = options;
-                      //alert(sinfo.length);
-                        document.getElementById('staffname').innerHTML = sinfo[1];
-                        document.getElementById('staffid').innerHTML = sinfo[2];
-                        document.getElementById('userCurrentRoleId').value = roleDataid;
-                        document.getElementById('userId').value = sinfo[0];
-                        document.getElementById('staffrole').innerHTML = rolename;
-
-                    }
-                  </script>
-
-                  <?php
-                }
-                ?>
+            <tr>
+              <td v-for="lecturer in Lecturers" :key="'list'+lecturer.id" @click="listselected(lecturer)" ><span class="lnr  lnr-user s3"></span><span class="name">@{{ lecturer.fullname }} (@{{ lecturer.lecture_ID }})</span></td>
+            </tr>
             @else
               <tr><td>No Lecturer in the system</td></tr>
             @endif
@@ -137,43 +70,63 @@ function departmentidR($id){
         ?>
           
       </div>
-      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-7 badguy brandG">
+      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-7 badguy brandG px-3" id="app2">
         <!-- <div class="" style="width: 90%;font-size: 0.95em; margin:0px auto;"> -->
           <!-- style="display: flex;justify-content: space-between; width: 180px;" -->
-          <div style="width: auto;">
-            <p class="PbrandG">Staff Name:</p>
-            <p id='staffname' style="">Name</p>
-          </div>
-          <div style="clear: left;width: auto;">
-            <p>Staff Id:</p>
-            <p id='staffid' style="">1002</p>
-          </div>
-          <div style="clear: left; width: auto;">
-            <p>Role:</p>
-            <p id='staffrole' style=""></p>
-          </div>
-          <div style="clear: left; width: auto; display: flex; justify-content: space-between; width: 200px;"  class="brandGI"  >
-            <select style="color: black; width: 180px; display: inline;" class="form-control brandGI " id="roleToAddId">
+          <div class="w-100 p-4 mx-3"  style="border:1px solid #eee; height:100%; padding:10px;box-shadow:1px 2px 3px #eee; border-radius:5px;" >
+
+                    
+            <table class="table w-100 text-left">
+              <tr>
+                <td class="w-25 bg-light text-success">
+                  Staff Name:
+                </td>
+                <td>
+                  @{{staffname}}
+                </td>
+              </tr>
+            </table>          
+            <table class="table w-100 text-left">
+              <tr>
+                <td class="w-25 bg-light text-success">
+                  Staff ID:
+                </td>
+                <td>
+                  @{{staffid}}
+                </td>
+              </tr>
+            </table>          
+            <table class="table w-100  text-left">
+              <tr>
+                <td class="w-25 bg-light text-success">
+                  Staff Roles:
+                </td>
+                <td>
+                  @{{staffrole}}
+                </td>
+              </tr>
+          </table>                 
+          <div style="clear: left; width: auto; display: flex; justify-content: space-between;"  class="brandGI w-100"  >
+            <select style="color: black;" class="form-control w-75 " id="roleToAddId">
             	<option value="">Select Role</option>
-              <?php
+               <?php
                   $roles = Role::where('status','=', 0)->get();
               
-                  foreach($roles as $role){
-                ?>
-                    <option value="{{ $role->id }}"> {{ $role->role }} </option>
-                  <?php
-                  }
-                  
-              ?>
+            
+                ?> 
+                    <option v-for="role in roles" :key="'role_'+role.id"  :value="role.id"> @{{role.role }} </option>                  
             </select>
-            <button class="btn btnU brandGI" id='assignId' style="width: 70px;">assign</button>
+            <button class="btn btnU brandGI w-25" id='assignId' @click="assignId()" style="width: 70px;">assign</button>
           </div>
           <input type="text" id="userId" value="" style="display: none;">
           <input type="text" id="userCurrentRoleId" value="" style="display: none;">
-          <div class="brandGI" style="display: flex; justify-content: space-between; width: 200px;">
-          <select class="brandGI" style="color: black;  display: inline;width: 180px;" class="form-control" id="roleToremove">
-          </select><button class="btn btnU brandGI" id='dassignId' style="width: 70px;">de assign</button>
+          <div class="brandGI w-100" style="display: flex;">
+          <select class="form-control w-75" style="color: black;  display: inline;" class="" id="roleToremove">
+             <option v-for="role in userRoles" :key="'role_'+role.id"  :value="role.id"> @{{role.role}} </option>       
+          </select>
+          <button class="btn btnU brandGI w-25" id='dassignId' @click="dassignId()" style="">de assign</button>
             
+            </div>
             </div>
           <!-- </div> -->
         </div>
@@ -213,123 +166,201 @@ $(".listS").dataTable({
     "iDisplayLength":6,
     "bAutoWidth": true
 });
-  $('#assignId').click(function(){
-    var uid = $('#userId').val()
-    //alert(uid);
-    if(uid ==""){
-      Swal.fire("Select User");
-    }else{
-      var rid = $('#roleToAddId').val();
-      if (rid==""){
-      	Swal.fire("","Select Role");
-      }else{
-        var userCurrentRoleIds = $('#userCurrentRoleId').val();
-        userCurrentRoleIds1 = userCurrentRoleIds.split(',');
-        //var oldroles = userCurrentRoleIds.replace(rid,'')
-        rid = userCurrentRoleIds+','+rid;
-      if(userCurrentRoleIds.includes(rid)){
-          Swal.fire({
-              type: 'error',
-              title: 'role already exist on user',
-              showConfirmButton: true,
-          }); 
-      }else{
-        //userCurrentRoleIds = userCurrentRoleIds.filter(e=>e! == rid)
-      $.ajax({
-        type: 'POST',
-        url:  "{{route('editUserRole')}}",
-        data: {rid:rid, uid:uid, _token:'{{ csrf_token() }}' },
-        success: function(data){
-      	$("#loader").hide();
-      	console.log(data);
-            if(data.success!=200){
-                Swal.fire({
-                  type: 'error',
-                  title: 'no connect to server',
-                  showConfirmButton: true,
-                }); 
-              }else{
-                Swal.fire({
-                  type: 'success',
-                  title: 'Role Assign Successfully',
-                  showConfirmButton: true
-                }).then((result) => {
-                  location.reload();
-                });
-              }
-          }
-      });
-      $("#loader").show();
-      }
-    }
-  }
-  });
+ 
 
   
-    $('#dassignId').click(function(){
-    var uid = $('#userId').val()
-    //alert(uid);
-    if(uid ==""){
-      Swal.fire("Select User");
-    }else{
-      var roll = $('#roleToremove').val().split(',');
-      var rid =  roll[0];
-      var rname = roll[1];
-      if (rid==""){
-        Swal.fire("","Select Role");
-      }else if(rid==5){
-        Swal.fire("","Role can not be Dessign");
-      }else{
-        //alert(rid);
-        //return 0;
-        Swal.fire({
-                text: 'Are you sure you want to deasign '+rname+' role',
-                showConfirmButton: true,
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes'
-              }).then((result) => {  
-                if (result.value){
-                   var userCurrentRoleIds = $('#userCurrentRoleId').val();
-                    //userCurrentRoleIds1 = userCurrentRoleIds.split(',');
-                    var oldroles = userCurrentRoleIds.replace(rid,'');
-                    oldroles = oldroles.replace(/,+$/, '');
-                    if (oldroles.indexOf(',')==0){
-                      oldroles = oldroles.replace(',', '');
-                    }
-                    oldroles = oldroles.replace(',,', ',');
-                   /* alert(oldroles);
-                    return 0;*/
+
+//console.log();
+
+  var app = new Vue({
+            el: '#app',
+            data: {
+              roles: <?php echo json_encode($roles); ?>,
+              Lecturers: <?php echo json_encode($Lecturers); ?>,
+              userRoles:[],
+              staffname:"",
+              staffid:"",
+              userCurrentRoleId:"",
+              userId:"",
+              staffrole:"",
+              selectedUser:"",
+              
+            },
+            methods:{
+              userrole(){
+                this.userRoles = this.Lecturers.filter((item)=>{
+                  if(item.user_id == this.userId){
+                    return item.roles;
+                  }
+                })              
+              },
+              listselected(lecturer){
+                var sinfo = lecturer.id
+                this.selectedUser = sinfo;
+                var options ='';
+                var roleDatas ='';
+                
+                lecturer.roles.forEach((item) => {
+                  options += '<option value="'+item.id+','+item.role+'">'+item.role+'</option>';
+                  
+                });                
+                document.getElementById('roleToremove').innerHTML = options;
+                //alert(sinfo.length);
+                  this.staffname = lecturer.fullname;
+                  this.staffid = lecturer.lecture_ID;
+                  this.userCurrentRoleId = lecturer.roles.map((item)=>{ return item.id });
+                  this.userId = lecturer.user_id;
+                  var rols = lecturer.roles.map((item)=>{ return item.role });                  
+                  this.staffrole = rols.join(',');
+                  this.userrole();
+                  
+              },
+              assignId(){
+                var uid = $('#userId').val(), role_ids="", $this = this;
+                //alert(uid);
+                if(this.selectedUser ==""){
+                  Swal.fire("Select User");
+                }else{
+                  var newrid = $('#roleToAddId').val(),
+                  rid="";
+                  if (newrid==""){
+                    Swal.fire("","Select Role");
+                  }else{
+                   // var userCurrentRoleIds1 = this.userCurrentRoleId.split(',');
+                    //var oldroles = userCurrentRoleIds.replace(rid,'')
+                    rolename = $("#roleToAddId option:selected").text();
+                    //id = userCurrentRoleIds+','+newrid;                    
+                  if(this.userCurrentRoleId.includes(Number(newrid))){
+                      Swal.fire({
+                          type: 'error',
+                          title: 'role already exist on user',
+                          showConfirmButton: true,
+                      }); 
+                  }else{
+                    this.userCurrentRoleId.push(newrid);
+                    role_ids = this.userCurrentRoleId.join(',');                    
+                    //userCurrentRoleIds = userCurrentRoleIds.filter(e=>e! == rid)
                   $.ajax({
-                  type: 'POST',
-                  url:  "{{route('editUserRole')}}",
-                  data: {rid:oldroles,rname:rname, uid:uid, _token:'{{ csrf_token() }}' },
-                  success: function(data){
-                  $("#loader").hide();
-                  console.log(data);
-                      if(data.success!=200){
-                          Swal.fire({
-                            type: 'error',
-                            title: 'no connect to server',
-                            showConfirmButton: true,
-                          }); 
-                        }else{
-                          Swal.fire({
-                            type: 'success',
-                            title: 'Role Dessigned Successfully',
-                            showConfirmButton: true
-                          }).then((result) => {
-                            location.reload();
-                          });
-                        }
+                    type: 'POST',
+                    url:  "{{route('editUserRole')}}",
+                    data: {rid:role_ids, uid:$this.userId, _token:'{{ csrf_token() }}' },
+                    success: function(data){
+                    $("#loader").hide();                    
+                        if(data.success!=200){
+                            Swal.fire({
+                              type: 'error',
+                              title: 'no connect to server',
+                              showConfirmButton: true,
+                            }); 
+                          }else{
+                            Swal.fire({
+                              type: 'success',
+                              title: 'Role Assign Successfully',
+                              showConfirmButton: true
+                            }).then((result) => {
+                             // location.reload();
+                             $this.staffrole += ','+rolename;
+                             $this.userrole();
+                             $this.Lecturers.map((item)=>{
+                               if(item.user_id == $this.userId){
+                                 item.roles.push({
+                                   id: newrid,
+                                   role: rolename
+                                 });
+                               }
+                             })
+                            });
+                          }
+                      }
+                  });
+                  $("#loader").show();
+                  }
+                }
+              }
+              },
+              dassignId(){
+                var uid = $('#userId').val()
+                //alert(uid);
+                var $this = this;
+                if(this.userId ==""){
+                  Swal.fire("Select User");
+                }else{
+                  var rid = $('#roleToremove').val();
+                  var rname = $('#roleToremove option:selected').text();
+                  if (rid==""){
+                    Swal.fire("","Select Role");
+                  }else if(rid==5){
+                    Swal.fire("","Role can not be Dessign");
+                  }else{
+                    //alert(rid);
+                    //return 0;
+                    Swal.fire({
+                      text: 'Are you sure you want to deasign '+rname+' role',
+                      showConfirmButton: true,
+                      showCancelButton: true,
+                      confirmButtonColor: '#3085d6',
+                      cancelButtonColor: '#d33',
+                      confirmButtonText: 'Yes'
+                    }).then((result) => {                              
+                      if(result.value){
+                        $this.userCurrentRoleId.splice($this.userCurrentRoleId.indexOf(rid), 1);                         
+                        /* alert(oldroles);
+                          return 0;*/
+                        $.ajax({
+                        type: 'POST',
+                        url:  "{{route('editUserRole')}}",
+                        data: {rid:$this.userCurrentRoleId.join(','),rname:rname, uid:$this.userId, _token:'{{ csrf_token() }}' },
+                        success: function(data){
+                        $("#loader").hide();
+                          //console.log(data);
+                            if(data.success!=200){
+                                Swal.fire({
+                                  type: 'error',
+                                  title: 'no connect to server',
+                                  showConfirmButton: true,
+                                }); 
+                              }else{
+                                Swal.fire({
+                                  type: 'success',
+                                  title: 'Role Dessigned Successfully',
+                                  showConfirmButton: true
+                                }).then((result) => {
+                                  location.reload();
+                                });
+                              }
+                          }
+                      });
+                      $("#loader").show();
+                      }else{}
+                  });
                     }
+                  }
+              }
+
+
+
+
+            },
+            created(){              
+              var exist_role = [];            
+              var  $this = this, role_ids = [];
+              this.Lecturers.map((item, index) =>{
+                
+                fname = item.first_name.toUpperCase()+' '+item.surname.toUpperCase();
+                item.fullname = fname;    
+
+                role_ids  = item.user.role_id.split(',').map(Number);
+                console.log(role_ids);
+                item.roles = $this.roles.filter((item2) => {
+                  return role_ids.includes(item2.id);
                 });
-                $("#loader").show();
-                }else{}
-            });
-         }
-      }
-  });
-</script>
+
+
+              });
+            }
+  })
+
+                 
+              
+ </script>
 @endsection 

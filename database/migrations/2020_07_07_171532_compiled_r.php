@@ -13,9 +13,8 @@ class CompiledR extends Migration
      */
     public function up()
     {
-        //
-        Schema::dropIfExist('compiled_r');
-        Schema::create('compiled_r', function(Blueprint $table)){
+        //        
+        Schema::create('compiled_r', function(Blueprint $table){
             $table->increments('id',255); 
             $table->string('detail',255);
             $table->integer('session');
@@ -25,7 +24,7 @@ class CompiledR extends Migration
             
             $table->timestamps();
             $table->boolean('status');
-        }
+        });
     }
 
     /**
@@ -36,5 +35,6 @@ class CompiledR extends Migration
     public function down()
     {
         //
+        Schema::dropIfExist('compiled_r');
     }
 }

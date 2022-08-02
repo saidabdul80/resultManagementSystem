@@ -48,6 +48,7 @@ $Faculty = Department::all();
       
       <br>
     </form>
+    @section('newscript')
     <script type="text/javascript">
       var Faculty = <?php echo json_encode($Faculty); ?>;
       $(document).ready(function(){
@@ -77,3 +78,4 @@ $Faculty = Department::all();
         });
       });
     </script>
+    @endsection

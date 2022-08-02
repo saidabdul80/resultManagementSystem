@@ -49,9 +49,11 @@ class CoursesList
 
 		?>
 		<label style="cursor: pointer;font-size: 0.8em;" id="advan" onclick="(function(){$('#myform1').slideToggle();})();">Advance>></label>
-		<form action="{{route(Route::getCurrentRoute()->getName())}}"  method="post" id="myform1"  <?php if($selSession!=''){ echo "class='advanceS'";}else{echo "style='display: none;' class='advanceS'";}?> >
+		<form action="{{url()->full()}}"  method="post" id="myform1"  <?php if($selSession!=''){ echo "class='advanceS'";}else{echo "style='display: none;' class='advanceS'";}?> >
 				 {{ csrf_field() }}
-          {{ method_field('PATCH') }}
+				 {{ method_field('PATCH') }}
+
+          
 			<select class="form-contro mr-1 mb-1" style="width: 100px !important;border: 1px solid #eee; font-size: 0.8em;" name="selSession" id="sessionS">
 				<option value="">select session</option>
 				<?php 

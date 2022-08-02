@@ -16,8 +16,8 @@ class FacultyTableSeeder extends Seeder
 
         DB::table('faculties')->delete();
         DB::table('faculties')->insert([
-        	'faculty'  => 'Natural Science',
-        	'faculty_abbr' => 'Natural_sci',
+        	'faculty'  => 'Test Faculty 1',
+        	'faculty_abbr' => 'TF',
             'status' => '0'
         ]);
     }

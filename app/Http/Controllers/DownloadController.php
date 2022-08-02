@@ -17,7 +17,7 @@ class DownloadController extends Controller
 
     	if ($type ==1 ) {
     		$student_registered = $request->input('student_registered');
-    		return view('lecturer\outFile\result_upload_template')->with('student_registered', $student_registered);
+    		return view('lecturer.outFile.result_upload_template')->with('student_registered', $student_registered);
     	}
     }
 }

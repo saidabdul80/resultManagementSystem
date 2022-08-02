@@ -46,7 +46,7 @@ use Illuminate\Http\Request;
 		$sessionname = $session->session;
 	}
 
-	
+	$level = $_POST['level'] ?? 1;
 	//echo $course_id = $_SESSION['eselected_course_code'];	
 	$store_grades='';
 	//require('class/left_pane.php');
@@ -165,7 +165,7 @@ use Illuminate\Http\Request;
 				<form method="POST" action="{{route('echanges1',221623)}}" style="margin-bottom: 8px;" id="formTag">
 					{{csrf_field()}}
 					<select id="levelTag" style="width: 70px !important;" name="level">
-						<option value="1" <?php $selectedl = $_POST['level'] ?? 0; if($selectedl ==1){echo 'selected';} ?> >100L</option>
+<option value="1" <?php $selectedl = $_POST['level'] ?? 0; if($selectedl ==1){echo 'selected';} ?> >100L</option>
 						<option value="2" <?php if($selectedl ==2){echo 'selected';} ?> >200L</option>
 						<option value="3" <?php if($selectedl ==3){echo 'selected';} ?> >300L</option>
 						<option value="4" <?php if($selectedl ==4){echo 'selected';} ?>>400L</option>
@@ -244,15 +244,7 @@ use Illuminate\Http\Request;
 				?>
 				<div style=" float: right !important;">
 				<button class="btn btn-primary btn-sm rounded m-2" id="printPDF">pdf</button>
-				<!-- <form method="post" action="pdf/resultExcel.php" target="_BLANK" style="width: 100px;">
-					<input type="text" name="department" value="<?php //echo $LECTURER->department_id; ?>" style='display: none'>
-					<input type="text" name="level" value="<?php// echo $level; ?>" style='display: none'>
-				
-					<input type="text" name="semester" value="<?php// echo $csemester; ?>" style='display: none'>
-					<input type="text" name="session" value="<?php// echo $sessionname; ?>" style='display: none'>
-					<input type="text" name="data" value="<?php //echo htmlentities(json_encode($result_array)); ?>" style='display: none'>
-					<input type="submit" value="excel" class="btn btn-primary btn-sm rounded m-2" >
-				</form> -->
+			
 				</div><br>
 				<table class="table table-condensed table-hover table-bordered mx-auto listt" style="font-size: 0.9em;width: 100%;" >
 					<thead>
@@ -395,7 +387,7 @@ use Illuminate\Http\Request;
 					</tbody>
 </table>
 </div>
-<!--*******************************************END GRADE TABLE FRO PDF **********************************************  -->
+<!--*************************************END GRADE TABLE FRO PDF **********************************************  -->
 
 			</div>		
 		</div>
@@ -534,15 +526,7 @@ use Illuminate\Http\Request;
 				<div >
 				<button class="btn btn-primary btn-sm rounded m-2 d-inline" id="printPDF">pdf</button>
 				
-				<!-- <form method="post" action="pdf/resulGradeExcel.php" target="_BLANK" style="width: 100px;">
-					<input type="text" name="department" value="<?php// echo $LECTURER->department_id; ?>" style='display: none'>
-					<input type="text" name="level" value="<?php// echo $selectedl; ?>" style='display: none'>
-					<input type="text" name="semester" value="<?php// echo $csemester ?>" style='display: none'>
-					<input type="text" name="session" value="<?php// echo $sessionname; ?>" style='display: none'>
-					<input type="text" name="data" value="<?php //echo htmlentities(json_encode($studentsR)); ?>" style='display: none'>
-					<input type="text" name="datah" value="<?php //echo htmlentities(json_encode($theader)); ?>" style='display: none'>
-					<input type="submit" value="excel" class="btn btn-primary btn-sm rounded m-2" >
-				</form> -->
+	
 				<p style="min-width: 240px !important;" class="d-inline">Totoal Average Failed: <input type="text" id="tavgF" style="width: 80px !important;" disabled="" value="0"> </p>
 				<p style="min-width: 240px !important;" class="d-inline">Totoal Average Pass: <input type="text" id="tavgP" style="width: 80px !important;" disabled="" value="0"></p>
 				<input type="button" id="saveTrend" value="<?php echo ($result_trend_key==-1)?'not ready':'save';?>" <?php echo ($result_trend_key==-1)?'disabled': ($result_trend_key==0)?'' : 'disabled';?> class="btn <?php echo ($result_trend_key==-1)?'btn-secondary':'btn-info';?>  p-0 rounded d-inline" style='width:80px !important;'>
@@ -770,6 +754,8 @@ use Illuminate\Http\Request;
  	var facultyname = '<?php echo $fact->faculty; ?>';
  	var departmentname = '<?php echo $dept->department; ?>';
  	var sessionname = '<?php echo $sessionname; ?>';
+// 	$level = 3;
+	//alert(<?php //echo $level; ?>);
  	var level = '<?php switch ($level??'') {
 									case 1:
 										echo 100;
@@ -779,10 +765,13 @@ use Illuminate\Http\Request;
 										break;
 									case 3:
 										echo 300;
+										break;
 									case 4:
 										echo 400;
+										break;
 									case 5:
 										echo 500;
+										break;
 									default:
 										echo '';							
 								}?>';
@@ -795,12 +784,13 @@ use Illuminate\Http\Request;
 
  	pdf.setFontSize(18);
 	pdf.setFontType("bold");
-	pdf.setFont("Arial");
+	pdf.setFont("tahoma");
 	pdf.text(schoolname,450, 40 , 'center');
+	pdf.setFontSize(12);
 	pdf.setFontType("normal");	
 	pdf.text('Faculty of '+facultyname ,450, 65 , 'center');
 	pdf.text('Department of '+departmentname,450, 85 , 'center' );
-	pdf.setFontSize(14);
+	pdf.setFontSize(12);
 	pdf.text(semester + '  ' +  sessionname + '  ' + level + 'level',450, 105 , 'center');
 	
 	

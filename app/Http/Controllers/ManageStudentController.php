@@ -148,4 +148,7 @@ class ManageStudentController extends Controller
             return back()->with('sendmsg',$sendmsg);            
         }
     }
+     
+  
+    
 }

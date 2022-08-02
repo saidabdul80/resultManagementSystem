@@ -2,7 +2,10 @@
 
 
 @section('body')
-
+    <div id="thePageLoader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh;background: rgba(60,200,20,.1); display: flex;flex-wrap: wrap;align-content: center;justify-content: center;z-index: 500000;">
+        <!-- <div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div> -->
+        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    </div>
     <!-- <div class="bg-lsuccess row" style="height: 25px; margin: 0px;"></div> -->
     <div id="wholePage">
     	
@@ -178,7 +181,10 @@
 	<div id="containerA" class="containerA" >
 		@yield('content')
 	</div>
-
+@yield('newscript')
 <footer style="po"><span style="">© 2020 saidabdul project</span> </footer>
+ <script type="text/javascript">
+     $('#thePageLoader').hide();
+ </script>
  </div>
 @endsection

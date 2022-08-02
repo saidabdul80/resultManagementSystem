@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use \App\Session;
+use DB;
 class ManageSessionController extends Controller
 {
     //
@@ -83,5 +84,32 @@ class ManageSessionController extends Controller
 
 	    	}
 	}
+	
+	  public function setSemester(Request $request)
+    {
+        
+    	$date = date('Y-m-d');
+    
+    	$id = $request->input('id');
+    	if ($id==1) {
+    		$semesterchange = 'first semester';
+    	}else{
+    		$semesterchange = 'second semester';
+    	}
+    
+    	$run1 = DB::table('semesters')
+              ->update(['c_set' => 0]);
+    
+    	$run0 =  DB::table('semesters')
+              ->where('semester_id', $id)
+              ->update(['c_set' => 1]);
+              
+    	if ($run1 == $run0) {
+    		return 1;
+    	}else{
+    		return 0;
+    	}
+
+    }
 
 }

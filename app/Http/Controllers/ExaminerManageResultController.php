@@ -53,7 +53,6 @@ class ExaminerManageResultController extends Controller
                 "created_by" => Auth::user()->id,
                 "created_on"=> $date
             ]
-
         ];
         
 //*******************************LOG ACTIVITY*****************************************************************

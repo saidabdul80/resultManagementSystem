@@ -115,9 +115,7 @@ if(isset($update)){
                   			 }
               			});
                       	$('#loader').show();
-                      	/*$.post("",{update:'update',id:<?php// echo $id;?>,type:2,_token:'{{ csrf_token() }}'}, function(data){
 
-                      	});*/
                     }
                   </script>
 

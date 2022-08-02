@@ -16,6 +16,10 @@ class Lecturer extends Model
     {
     	return $this->hasMany(Lecturer_allocated_course::class);
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
     
     public $timestamps = false;
 }

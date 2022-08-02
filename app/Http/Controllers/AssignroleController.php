@@ -27,7 +27,7 @@ class AssignroleController extends Controller
 		$uid = $request->input('uid');
 		$type = $request->input('type');
 			//update user role
-			User::where('email',$uid)->update(['role_id'=> $rid]);
+			User::where('id',$uid)->update(['role_id'=> $rid]);
 			return response()->json(['success'=>200]);
     }
     

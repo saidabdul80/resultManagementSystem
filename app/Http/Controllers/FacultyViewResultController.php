@@ -16,4 +16,15 @@ class FacultyViewResultController extends Controller
     {
     	return view('/faculty/index');
     }
+    
+    public function viewResult()
+    {
+    	return view('/faculty/f_view_result');
+    }
+    
+    public function withdata($p= null,Request $request)
+    {
+    	return view('/faculty/f_view_result',['p'=>$p]);	
+    }
+
 }

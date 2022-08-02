@@ -26,7 +26,7 @@ class CreateFTimingTable extends Migration
         });
 
         Schema::table('f_timing', function(Blueprint $table){
-            $table->foreign('faculty')->references('id')->on('faculty')
+            $table->foreign('faculty')->references('id')->on('faculties')
             ->onDelete('restrict')
             ->onUpdate('no action');
 

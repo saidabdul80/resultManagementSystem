@@ -13,7 +13,7 @@ use \App\f_timing;
 	$session = \App\Session::where('c_set',1)->first();
 	$semester = \App\Semester::where('c_set',1)->first();
 	$isLecturer = Lecturer::where('email', Auth::user()->email)->first();
-	//dd($isLecturer->department_id);
+	
 	$date = date('Y-m-d');
 	if (!is_null($isLecturer)) {
 		
@@ -190,7 +190,7 @@ use \App\f_timing;
 
 						$session_name =  session('current_set_session');
 					
-						$run = DB::table('Students_registered_courses', 'sr')
+						$run = DB::table('students_registered_courses', 'sr')
 								->join('students', 'sr.student_id','=','students.id')
 								->join('courses', 'courses.id','=','sr.course_id')
 								->join('levels', 'sr.level_id','=','levels.id')

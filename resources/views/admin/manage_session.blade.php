@@ -278,7 +278,7 @@ $(document).ready(function(){
 			Swal.fire('semester already set');
 			return 0;
 		}
-		$.post('misc/setsmester.php',{id:1,name:'first semester'}, function(data){
+		$.post('{{route("setSemester")}}',{id:1,name:'first semester',_token: "{{ csrf_token() }}"}, function(data){
 			$("#loader").hide();
 
 			if(data==1){
@@ -306,9 +306,10 @@ $(document).ready(function(){
 			Swal.fire('semester already set');
 			return 0;
 		}
-		$.post('misc/setsmester.php',{id:2,name:'second semester'}, function(data){
+		$.post('{{route("setSemester")}}',{id:2,name:'second semester',_token: "{{ csrf_token() }}"}, function(data){
 		//alert(data);
 			$("#loader").hide();
+			console.log(data);
 			if(data==1){
 					Swal.fire({
 					type: 'success',
@@ -326,7 +327,9 @@ $(document).ready(function(){
 			}else{
 				Swal.fire('Erro Line 274: please contact the higher administrator');
 			}
-		});
+		}).fail(function(e) {
+            console.log(e);
+          });
 		$("#loader").show();
 	});
 });

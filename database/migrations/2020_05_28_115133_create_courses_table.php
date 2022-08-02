@@ -21,8 +21,8 @@ class CreateCoursesTable extends Migration
             $table->string('course_title',191);
             $table->string('course_description',555)->default('-');
             $table->integer('credit_unit')->unsigned();
-            $table->integer('semester')->unsigned();
-            $table->timestamps('created_on');
+            $table->integer('semester')->unsigned();        
+            $table->timestamps();
             $table->boolean('status');
         });
 

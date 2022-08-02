@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 */
 
 //actual to use
+Route::get('/', function(){ return view('auth.login'); });
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('login', 'Auth\LoginController@login');
 Route::post('register', 'Auth\RegisterController@Registeration')->name('register');
@@ -49,6 +50,7 @@ Route::post('/admin/grade', 'GradeController@sessionsForGrade')->name('selectGra
 
 Route::get('/admin/manage-session', 'ManageSessionController@show')->name('manage-session');
 Route::post('/admin/manage-session', 'ManageSessionController@EditSession')->name('sessionCRUD');
+Route::post('/admin/setSemester', 'ManageSessionController@setSemester')->name('setSemester');
 
 Route::get('/admin/manage-student', 'ManageStudentController@show')->name('manage-student');
 Route::post('/admin/manage-student', 'ManageStudentController@EditStudent')->name('studentCRUD');
@@ -73,15 +75,21 @@ Route::get('/admin', 'AdminController@Index');
 Route::get('/lecturer/dashboard', 'ManageLecturerDashboardController@show')->name('ldashboard');
 Route::get('/lecturer/manage-result', 'ManageLecturerResultController@show')->name('l_manage_result');
 Route::get('/lecturer/view-student', 'LecturerViewStudentsController@show')->name('l_view_student');
-Route::patch('/lecturer/view-student', 'LecturerViewStudentsController@show')->name('l_view_student');
+Route::post('/lecturer/view-student', 'LecturerViewStudentsController@show')->name('l_view_student');
 Route::get('/lecturer/logs', 'ManageLecturerLogsController@show')->name('l_logs');
-Route::patch('/lecturer/download', 'DownloadController@download')->name('result_upload_template');
+Route::post('/lecturer/download', 'DownloadController@download')->name('result_upload_template');
 
 
 /*
 */
 
 Route::get('/lecturer/manage-result/{p?}', function($p= null){	
+	//session();
+	//??session('p')
+	return view('lecturer/l_manage_result',['p'=>$p]);
+})->name('lchanges')->middleware('auth');
+
+Route::patch('/lecturer/manage-result/{p?}', function($p= null){	
 	//session();
 	//??session('p')
 	return view('lecturer/l_manage_result',['p'=>$p]);
@@ -157,7 +165,9 @@ Route::post('/examiner/manage-lecturer', 'ExaminerManagmentController@ExaminerPa
 Route::get('/faculty/dashboard', 'ManageFacultyDashboardController@show')->name('fdashboard');
 Route::get('/faculty/timing', 'FtimingController@show')->name('f_timing');
 Route::post('/faculty/timing', 'FtimingController@ManageTime')->name('manage_timing');
-Route::get('/faculty/view-result', 'FacultyViewResultController@show')->name('f_view_result');
+Route::get('/faculty/view-result', 'FacultyViewResultController@viewResult')->name('f_view_result');
+Route::get('/faculty/view-result/{p}', 'FacultyViewResultController@withdata')->name('fchanges');
+Route::POST('/faculty/view-result/{p}', 'FacultyViewResultController@withdata')->name('fchanges1');
 Route::get('/faculty/flogs', 'flogsController@show')->name('f_logs');/*
 Route::get('/faculty/e-logs', 'elogsController@show')->name('e_logs');
 Route::post('/faculty/manage-lecturer', 'ExaminerManagmentController@ExaminerPage')->name('e-managesession');*/
